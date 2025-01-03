@@ -209,3 +209,44 @@ plot(x, col = (y + 1))
 svmfit <- svm(y ~ ., data = dat, kernel = "radial", 
               cost = 10, gamma = 1)
 plot(svmfit, dat)
+
+
+# Application to Gene Expression Data
+
+library(ISLR2)
+names(Khan)
+
+# 20 observation ans 2308 genes 
+
+dim(Khan$xtrain)
+
+
+dim(Khan$xtest)
+
+
+# We will use a support vector approach to predict cancer subtype using gene expression measurements. 
+# In this data set, there are a very large number of features relative to the number of observations. 
+# This suggests that we should use a linear kernel, 
+# because the additional flexibility that will result from using a polynomial or radial kernel is unnecessary.
+
+dat <- data.frame(
+  x = Khan$xtrain,
+  y = as.factor(Khan$ytrain)
+)
+
+out <- svm(y~. , data = dat, kernel = "linear", cost = 10)
+
+summary(out)
+
+table(out$fitted, dat$y)
+
+#  no training errors : large number of variables relative to the number of observations implies that it is easy to find hyperplanes that fully separate the classes.
+
+# testing data 
+
+dat.te <- data.frame(
+  x = Khan$xtest, 
+  y = as.factor(Khan$ytest))
+pred.te <- predict(out, newdata = dat.te)
+table(pred.te, dat.te$y)
+
