@@ -1,4 +1,4 @@
-set.seed(2)
+set.seed(1)
 x <- matrix(rnorm(20 * 2), ncol = 2)
 y <- c(rep(-1, 10), rep(1, 10))
 x[y == 1, ] <- x[y == 1, ] + 1
@@ -23,7 +23,7 @@ summary(svm.fit)
 
 ## Cross Validation to select optimum cost 
 
-set.seed(2)
+set.seed(1)
 
 tune.out <- tune(svm, y ~ . , data = dat, kernel = "linear",
      ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100))
@@ -55,18 +55,32 @@ y_pred2 <- predict(svm.fit2, testdat)
 table(predict = y_pred2, truth = testdat$y)
 
 
+# Linearly seperable classes 
+x[y == 1, ] <- x[y == 1, ] + 0.5
+plot(x, col = (y + 5) / 2, pch = 19)
 
+#  We fit the support vector classifier and plot the resulting hyperplane, 
+# using a very large value of cost so that no observations are misclassified.
 
+dat <- data.frame(x = x, y = as.factor(y))
 
+svm.fit <- svm(y~ ., data = dat, kernel = "linear", 
+    cost = 1e5)
 
+summary(svm.fit)
 
+plot(svm.fit, dat)
 
+# decrease the cost 
 
+svm.fit2 <- svm(y~. , data = dat, kernel = "linear",
+    cost = 1)
 
+summary(svm.fit2)
 
+plot(svm.fit2, dat)
 
-
-
-
+# Using cost = 1, we misclassify a training observation, but we also obtain a much wider margin and make use of seven support vectors. 
+# It seems likely that this model will perform better on test data than the model with cost = 1e5.
 
 
